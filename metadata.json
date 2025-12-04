@@ -1,0 +1,7 @@
+{
+  "name": "Little Green Tea AI - 小绿茶灵卜",
+  "description": "Companion app for the Little Green Tea AI Fortune Telling Toy. Manage connectivity, view spiritual reports, and recharge services.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
