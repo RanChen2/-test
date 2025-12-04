@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { Sparkles, BrainCircuit, Share2 } from 'lucide-react';
+import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { Sparkles, ScrollText, Share2, Loader2 } from 'lucide-react';
 import { FortuneRecord } from '../types';
 import { generateWeeklyReport } from '../services/aiService';
 
@@ -20,77 +20,100 @@ export const ReportPage: React.FC<ReportPageProps> = ({ records }) => {
   };
 
   return (
-    <div className="pb-24 pt-6 px-4 animate-fade-in">
-      <h2 className="text-2xl font-bold text-tea-100 mb-6 flex items-center gap-2">
-        <BrainCircuit className="w-6 h-6 text-tea-400" />
-        灵性周报
-      </h2>
-
-      {/* Mood Chart */}
-      <div className="bg-tea-900/50 rounded-2xl p-4 border border-tea-800 mb-6">
-        <h3 className="text-sm font-medium text-tea-300 mb-4">心情能量波动</h3>
-        <div className="h-48 w-full">
+    <div className="pt-6 px-4 animate-fade-in space-y-8">
+      
+      {/* Chart Section */}
+      <div className="glass-card rounded-2xl p-5 relative overflow-hidden">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-sm font-serif text-mystic-300 tracking-wider">灵场波动</h3>
+          <span className="text-[10px] text-mystic-600 bg-mystic-900/40 px-2 py-0.5 rounded-full border border-mystic-800">近7日</span>
+        </div>
+        
+        <div className="h-40 w-full relative z-10">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={records}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#166534" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(45, 168, 146, 0.1)" vertical={false} />
               <XAxis 
                 dataKey="date" 
-                tick={{ fill: '#86efac', fontSize: 10 }} 
+                tick={{ fill: '#5eead4', fontSize: 9, opacity: 0.6 }} 
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={(val) => val.split('-').slice(1).join('/')}
+                tickFormatter={(val) => val.split('-').slice(2).join('')}
               />
-              <YAxis hide domain={[0, 100]} />
               <Tooltip 
-                cursor={{fill: '#166534', opacity: 0.3}}
-                contentStyle={{ backgroundColor: '#064e3b', borderColor: '#16a34a', color: '#fff' }}
+                cursor={{fill: 'rgba(255,255,255,0.05)'}}
+                contentStyle={{ backgroundColor: '#02120e', borderColor: '#13675a', color: '#ccfbf1', borderRadius: '8px', fontSize: '12px' }}
+                itemStyle={{ color: '#5eead4' }}
               />
-              <Bar dataKey="moodScore" fill="#4ade80" radius={[4, 4, 0, 0]} barSize={20} />
+              <Bar 
+                dataKey="moodScore" 
+                fill="url(#barGradient)" 
+                radius={[2, 2, 0, 0]} 
+                barSize={12} 
+                animationDuration={1500}
+              />
+              <defs>
+                <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#5eead4" stopOpacity={0.8}/>
+                  <stop offset="100%" stopColor="#13675a" stopOpacity={0.2}/>
+                </linearGradient>
+              </defs>
             </BarChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* AI Summary Section */}
-      <div className="bg-gradient-to-b from-tea-900 to-black rounded-2xl p-1 border border-tea-700/50">
-        <div className="bg-tea-950/80 rounded-xl p-5 backdrop-blur-sm">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-gold-400 flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              小绿茶的解读
+      {/* AI Report Section */}
+      <div className="relative">
+        {/* Decorative corner accents */}
+        <div className="absolute -top-1 -left-1 w-4 h-4 border-t border-l border-gold-500/30 rounded-tl-lg"></div>
+        <div className="absolute -top-1 -right-1 w-4 h-4 border-t border-r border-gold-500/30 rounded-tr-lg"></div>
+        <div className="absolute -bottom-1 -left-1 w-4 h-4 border-b border-l border-gold-500/30 rounded-bl-lg"></div>
+        <div className="absolute -bottom-1 -right-1 w-4 h-4 border-b border-r border-gold-500/30 rounded-br-lg"></div>
+
+        <div className="glass-card rounded-xl p-6 min-h-[200px] flex flex-col">
+          <div className="flex justify-between items-center mb-4 border-b border-mystic-500/10 pb-3">
+            <h3 className="text-lg font-serif font-bold text-gold-400 flex items-center gap-2">
+              <ScrollText className="w-4 h-4" />
+              天机解读
             </h3>
             {!report && !loading && (
               <button 
                 onClick={handleGenerateReport}
-                className="text-xs bg-tea-700 hover:bg-tea-600 text-white px-3 py-1.5 rounded-full transition-colors"
+                className="text-xs bg-mystic-800/80 hover:bg-mystic-700 text-mystic-200 px-4 py-1.5 rounded-full border border-mystic-600/50 transition-colors tracking-wide"
               >
-                生成报告
+                开启卷轴
               </button>
             )}
           </div>
 
-          {loading ? (
-            <div className="py-8 flex flex-col items-center justify-center text-tea-400 space-y-3">
-              <Sparkles className="w-8 h-8 animate-spin text-gold-400" />
-              <p className="text-sm animate-pulse">正在连接宇宙能量场...</p>
-            </div>
-          ) : report ? (
-            <div className="animate-fade-in">
-              <div className="text-tea-100 text-sm leading-relaxed whitespace-pre-line border-l-2 border-gold-500 pl-4 py-2">
-                {report}
+          <div className="flex-1 flex flex-col justify-center">
+            {loading ? (
+              <div className="py-8 flex flex-col items-center justify-center text-mystic-400 space-y-4">
+                <div className="relative">
+                  <div className="absolute inset-0 animate-ping opacity-20 bg-mystic-400 rounded-full"></div>
+                  <Loader2 className="w-8 h-8 animate-spin text-gold-400" />
+                </div>
+                <p className="text-xs animate-pulse tracking-widest text-mystic-500">观星象中...</p>
               </div>
-              <div className="mt-4 flex justify-end">
-                <button className="flex items-center gap-1 text-xs text-tea-400 hover:text-white transition-colors">
-                  <Share2 className="w-3 h-3" />
-                  分享报告
-                </button>
+            ) : report ? (
+              <div className="animate-fade-in relative">
+                <div className="text-mystic-100/90 text-sm leading-8 font-serif whitespace-pre-line tracking-wide">
+                  {report}
+                </div>
+                <div className="mt-6 pt-4 border-t border-dashed border-mystic-500/20 flex justify-end">
+                  <button className="flex items-center gap-2 text-xs text-gold-500/80 hover:text-gold-400 transition-colors">
+                    <Share2 className="w-3 h-3" />
+                    泄露天机
+                  </button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <p className="text-tea-500 text-sm italic">
-              点击生成，让小绿茶为你总结这一周的运势起伏，并给出专属建议。
-            </p>
-          )}
+            ) : (
+              <p className="text-mystic-600 text-xs italic text-center leading-loose">
+                "万物皆有灵，数据亦有命。<br/>点击开启卷轴，查看本周运势总结。"
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

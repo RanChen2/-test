@@ -5,38 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>小绿茶灵卜 AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
           extend: {
+            fontFamily: {
+              sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+              serif: ['"Noto Serif SC"', 'serif'],
+            },
             colors: {
-              tea: {
-                50: '#f0fdf4',
-                100: '#dcfce7',
-                200: '#bbf7d0',
-                300: '#86efac',
-                400: '#4ade80',
-                500: '#22c55e',
-                600: '#16a34a',
-                700: '#15803d',
-                800: '#166534',
-                900: '#064e3b', // Deep mystical green
-                950: '#022c22',
+              mystic: {
+                900: '#02120e', // Void
+                800: '#062c26', // Deep Forest
+                700: '#0d423a',
+                600: '#13675a',
+                500: '#2da892', // Jade
+                400: '#5eead4', // Spirit Light
+                300: '#99f6e4',
+                100: '#ccfbf1',
               },
               gold: {
+                300: '#fde68a',
                 400: '#fbbf24',
-                500: '#f59e0b',
-                600: '#d97706',
+                500: '#d97706', // Antique Gold
+                600: '#b45309',
               }
             },
             animation: {
-              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'spin-slow': 'spin 60s linear infinite',
+              'spin-reverse-slow': 'spin-reverse 45s linear infinite',
+              'pulse-glow': 'pulse-glow 4s ease-in-out infinite',
               'float': 'float 6s ease-in-out infinite',
+              'fade-in': 'fadeIn 0.8s ease-out forwards',
             },
             keyframes: {
+              'spin-reverse': {
+                '0%': { transform: 'rotate(360deg)' },
+                '100%': { transform: 'rotate(0deg)' },
+              },
+              'pulse-glow': {
+                '0%, 100%': { opacity: 0.4, transform: 'scale(1)' },
+                '50%': { opacity: 0.8, transform: 'scale(1.05)' },
+              },
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-10px)' },
+              },
+              fadeIn: {
+                '0%': { opacity: 0, transform: 'translateY(10px)' },
+                '100%': { opacity: 1, transform: 'translateY(0)' },
               }
             }
           },
@@ -45,14 +63,73 @@
     </script>
     <style>
       body {
-        background-color: #022c22; /* tea-950 */
-        color: #ecfdf5; /* tea-50 */
+        background-color: #02120e;
+        color: #e2e8f0;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
       }
-      /* Hide scrollbar for clean mobile look */
+      
+      /* Background Ambience */
+      .bg-cosmos {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        background: radial-gradient(circle at 50% 30%, #062c26 0%, #02120e 80%);
+        overflow: hidden;
+      }
+
+      .star-field {
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
+        background-image: 
+          radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+          radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+          radial-gradient(1.5px 1.5px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+          radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0));
+        background-repeat: repeat;
+        background-size: 200px 200px;
+        opacity: 0.3;
+        animation: spin-slow 120s linear infinite;
+      }
+
+      .rune-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 50%;
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .glass-nav {
+        background: rgba(2, 18, 14, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      
+      /* Hide scrollbar */
       ::-webkit-scrollbar {
         display: none;
+      }
+      
+      .text-glow {
+        text-shadow: 0 0 10px rgba(94, 234, 212, 0.3);
       }
     </style>
   <script type="importmap">
@@ -69,6 +146,11 @@
 </script>
 </head>
   <body>
+    <div class="bg-cosmos">
+      <div class="star-field"></div>
+      <div class="rune-ring w-[600px] h-[600px] animate-spin-slow opacity-20 border-dashed"></div>
+      <div class="rune-ring w-[400px] h-[400px] animate-spin-reverse-slow opacity-30"></div>
+    </div>
     <div id="root"></div>
   </body>
 </html>
