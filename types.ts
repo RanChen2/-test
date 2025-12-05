@@ -26,7 +26,8 @@ export enum AppRoute {
   DEVICE = 'DEVICE',
   REPORT = 'REPORT',
   STORE = 'STORE',
-  PROFILE = 'PROFILE'
+  PROFILE = 'PROFILE',
+  DESTINY = 'DESTINY' // New route for customization
 }
 
 export interface RechargePackage {

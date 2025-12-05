@@ -1,20 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Home, Compass, ShoppingBag, ScrollText, User, Sparkles, Wifi, Zap } from 'lucide-react';
+import { Home, Compass, ShoppingBag, ScrollText, User, Sparkles, Zap, Fingerprint } from 'lucide-react';
 import { MOCK_USER, MOCK_RECORDS, RANDOM_QUOTES } from './constants';
 import { UserProfile, DeviceStatus, AppRoute } from './types';
 import { ReportPage } from './components/ReportPage';
 import { DeviceSetup } from './components/DeviceSetup';
 import { StorePage } from './components/StorePage';
+import { DestinyPage } from './components/DestinyPage';
 
 // --- Shared Components ---
 
 const BottomNav = ({ current, onChange }: { current: AppRoute, onChange: (r: AppRoute) => void }) => {
   const navItems = [
     { id: AppRoute.HOME, icon: Home, label: '灵境' },
-    { id: AppRoute.DEVICE, icon: Compass, label: '连接' },
+    { id: AppRoute.DESTINY, icon: Fingerprint, label: '定契' }, // Replaced Device/Connect for now or added as main feature
     { id: AppRoute.REPORT, icon: ScrollText, label: '天书' },
     { id: AppRoute.STORE, icon: ShoppingBag, label: '供奉' },
-    { id: AppRoute.PROFILE, icon: User, label: '本尊' },
+    { id: AppRoute.DEVICE, icon: Compass, label: '连接' }, // Moved to end, replacing Profile
   ];
 
   return (
@@ -38,10 +39,10 @@ const BottomNav = ({ current, onChange }: { current: AppRoute, onChange: (r: App
   );
 };
 
-const Header = ({ title, user, transparent = false }: { title: string, user: UserProfile, transparent?: boolean }) => (
+const Header = ({ title, user, transparent = false, onProfileClick }: { title: string, user: UserProfile, transparent?: boolean, onProfileClick: () => void }) => (
   <header className={`sticky top-0 z-40 px-6 py-4 flex justify-between items-center transition-all duration-500 ${transparent ? 'bg-transparent' : 'glass-nav'}`}>
     <h1 className="text-xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-mystic-100 to-mystic-400 tracking-widest text-glow">{title}</h1>
-    <div className="flex items-center gap-2 bg-black/20 backdrop-blur-sm border border-white/5 rounded-full pl-1 pr-3 py-1">
+    <div onClick={onProfileClick} className="flex items-center gap-2 bg-black/20 backdrop-blur-sm border border-white/5 rounded-full pl-1 pr-3 py-1 cursor-pointer hover:bg-white/10 transition-colors">
       <img src={user.avatarUrl} alt="Avatar" className="w-6 h-6 rounded-full border border-mystic-600 opacity-80" />
       <span className="text-xs font-serif text-gold-400">{user.coins} 灵力</span>
     </div>
@@ -71,16 +72,15 @@ const HomePage = ({ device, user, onNavigate }: { device: DeviceStatus, user: Us
         
         {/* Core - Status Indicator */}
         <div 
-          onClick={() => onNavigate(AppRoute.DEVICE)}
-          className={`relative z-10 w-32 h-32 rounded-full glass-card flex flex-col items-center justify-center cursor-pointer transition-all duration-1000 group ${device.isConnected ? 'shadow-[0_0_50px_rgba(45,168,146,0.2)]' : 'grayscale opacity-80'}`}
+          onClick={() => onNavigate(AppRoute.DESTINY)}
+          className={`relative z-10 w-32 h-32 rounded-full glass-card flex flex-col items-center justify-center cursor-pointer transition-all duration-1000 group shadow-[0_0_50px_rgba(45,168,146,0.1)] hover:shadow-[0_0_80px_rgba(45,168,146,0.3)]`}
         >
-          <div className={`absolute inset-0 rounded-full opacity-20 ${device.isConnected ? 'bg-mystic-400 animate-pulse-glow' : ''}`}></div>
+          <div className={`absolute inset-0 rounded-full opacity-20 ${device.isConnected ? 'bg-mystic-400 animate-pulse-glow' : 'bg-mystic-800'}`}></div>
           <img src="https://api.dicebear.com/9.x/notionists/svg?seed=GreenTea" alt="AI" className="w-20 h-20 opacity-90 group-hover:scale-110 transition-transform duration-500" />
           
           {/* Status Badge */}
-          <div className={`absolute -bottom-3 px-3 py-0.5 rounded-full text-[10px] border backdrop-blur-md flex items-center gap-1.5 ${device.isConnected ? 'bg-mystic-900/80 border-mystic-500/30 text-mystic-300' : 'bg-red-900/50 border-red-500/30 text-red-300'}`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${device.isConnected ? 'bg-mystic-400 animate-pulse' : 'bg-red-500'}`}></div>
-            {device.isConnected ? '已通灵' : '离线'}
+          <div className={`absolute -bottom-3 px-3 py-0.5 rounded-full text-[10px] border backdrop-blur-md flex items-center gap-1.5 ${device.isConnected ? 'bg-mystic-900/80 border-mystic-500/30 text-mystic-300' : 'bg-mystic-900/80 border-mystic-500/30 text-mystic-500'}`}>
+             <span className="tracking-wider">点击通灵</span>
           </div>
         </div>
       </div>
@@ -129,8 +129,8 @@ const ProfilePage = ({ user }: { user: UserProfile }) => (
     <div className="glass-card rounded-2xl overflow-hidden p-1 space-y-1">
       {[
         { label: '我的法器', val: 'Little Green Tea Gen 1' },
-        { label: '命理档案', val: '42 卦' },
-        { label: '灵力账户', val: '138****8888' },
+        { label: '命理档案', val: '玄水隐士' },
+        { label: '灵力账户', val: user.coins.toString() },
         { label: '阵法设置', val: '', isArrow: true },
         { label: '传唤信使', val: '', isArrow: true },
         { label: '关于天机', val: 'v1.0.2', isArrow: true },
@@ -199,6 +199,8 @@ export default function App() {
         return <StorePage user={user} onRecharge={handleRecharge} />;
       case AppRoute.PROFILE:
         return <ProfilePage user={user} />;
+      case AppRoute.DESTINY:
+        return <DestinyPage onComplete={() => setCurrentRoute(AppRoute.HOME)} />;
       default:
         return <HomePage device={device} user={user} onNavigate={setCurrentRoute} />;
     }
@@ -211,14 +213,28 @@ export default function App() {
       case AppRoute.REPORT: return '天机周报';
       case AppRoute.STORE: return '灵力供奉';
       case AppRoute.PROFILE: return '本尊';
+      case AppRoute.DESTINY: return '命理定制';
       default: return '小绿茶';
     } 
   };
 
   return (
     <div className="min-h-screen text-mystic-100 font-sans selection:bg-mystic-500 selection:text-white pb-24">
-      {currentRoute !== AppRoute.HOME && <Header title={getPageTitle()} user={user} />}
-      {currentRoute === AppRoute.HOME && <Header title="" user={user} transparent />}
+      {currentRoute !== AppRoute.HOME && (
+        <Header 
+          title={getPageTitle()} 
+          user={user} 
+          onProfileClick={() => setCurrentRoute(AppRoute.PROFILE)} 
+        />
+      )}
+      {currentRoute === AppRoute.HOME && (
+        <Header 
+          title="" 
+          user={user} 
+          transparent 
+          onProfileClick={() => setCurrentRoute(AppRoute.PROFILE)}
+        />
+      )}
       
       <main className="max-w-md mx-auto relative z-10">
         {renderContent()}
